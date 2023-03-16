@@ -1,0 +1,15 @@
+SyntheticData:
+    n_actions: 1000
+    users_context_file: path
+    dim_context: 23
+    users_frequency_file: path
+    reward_type: continuo
+    obp_parameters: None
+    reward_function: linear
+    splitting:
+    min_reward:
+    strategy: temporal
+    max_reward:
+    train_size: 0
+    n_users: 94
+    test_consumes:

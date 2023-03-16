@@ -1,0 +1,4 @@
+ExperimentalSetup:
+    irec_parameters_file: path
+    input_file: path
+    output_file: path
