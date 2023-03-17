@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from api.commands import execute_experiment
+from api.commands import run_experiment
 
 CLI = ArgumentParser()
 
@@ -29,7 +29,7 @@ def argument(*name_or_flags, **kwargs):
     command_name="execute-experiment"
 )
 def execute_experiment(args):
-    execute_experiment(args)
+    run_experiment(args)
 
 if __name__ == "__main__":
     args = CLI.parse_args()
