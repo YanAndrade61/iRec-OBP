@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from api.commands import run_experiment
+from api.commands.run_experiment import run_experiment
 
 CLI = ArgumentParser()
 

@@ -1,4 +1,5 @@
 from obp.dataset import SyntheticBanditDataset
+from obp.types import BanditFeedback
 
 class NewSyntheticBanditDataset(SyntheticBanditDataset):
   

@@ -1,23 +1,23 @@
 SyntheticData:
     obp_args:
-        n_actions: !!int 1000
-        dim_context: !!int 23
-        reward_type: !!str 'binary'
-        reward_function: !!str 'linear_reward_function'
-        reward_std: !!float None
-        action_context: None
-        behavior_policy_function: !!str None
-        beta: !!float None
-        n_deficient_actions: !!int None
-        random_state: !!int 12345
-        dataset_name: !!str None
+        n_actions:  1000
+        dim_context:  23
+        reward_type: 'binary'
+        reward_function: 'linear_reward_function'
+        reward_std: Null
+        action_context: Null
+        behavior_policy_function: Null
+        beta: Null
+        n_deficient_actions:  Null
+        random_state:  12345
+        dataset_name: Null
 
     splitting:
-          strategy: !!str 'temporal'
-          train_size: !!float 0.8
-          test_consumes: !!int 5
+          strategy: 'temporal'
+          train_size: 0.8
+          test_consumes:  5
     
     extra_args:
-        user_context_file: !!str '../examples/context/user.csv'
-        min_reward: !!float None
-        max_reward: !!float None
+        user_context_file: '../examples/context/user.csv'
+        min_reward: Null
+        max_reward: Null
