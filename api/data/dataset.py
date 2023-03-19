@@ -51,10 +51,12 @@ def create_synthetic_data(synthetic_config):
     }
 
     loader = FullData(dataset, synthetic_config['splitting'])
-    train_dataset, test_dataset, _, _, test_uids, threshold = loader.process()
+    train_dataset, test_dataset, _, _, = loader.process()
+    test_uids = np.unique(test_dataset.data[:,0])
+    threshold = test_dataset.data.min(axis=0)[3]
 
     test_data = bandit_data[(bandit_data['user_id'].isin(test_uids))].groupby('user_id').head(100)
-    train_data = bandit_data[not (bandit_data['user_id'].isin(test_uids)) & bandit_data['timestamp'] <= threshold]
+    train_data = bandit_data[not (~bandit_data['user_id'].isin(test_uids)) & bandit_data['timestamp'] <= threshold]
     train_idx = train_data.index.tolist()
     test_idx = test_data.index.tolist()
 
