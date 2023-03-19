@@ -1,5 +1,6 @@
 SyntheticData:
     obp_args:
+        n_rounds: 1000
         n_actions:  1000
         dim_context:  23
         reward_type: 'binary'
