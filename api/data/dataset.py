@@ -11,28 +11,27 @@ def get_class(class_name: str):
     except KeyError:
         raise Exception(f"Class not found: {class_name}.")
 
-def create_synthetic_data(synthetic_config):
-    
-    obp_args = synthetic_config['obp_args']
+def create_synthetic_data(config):
+    obp_args = config['obp_args']
 
-    if obp_args.get('reward_function',None) != None:
+    if obp_args.get('reward_function', None) is not None:
         obp_args['reward_function'] = get_class(obp_args['reward_function'])
 
-    if obp_args.get('behavior_function',None) != None:
+    if obp_args.get('behavior_function', None) is not None:
         obp_args['behavior_function'] = get_class(obp_args['behavior_function'])
 
-#---------------------------------------------------SYNTHETIC-DATA-------------------------------------------------#
-    dataset = NewSyntheticBanditDataset(
-        **(obp_args)
-    )
+    # Create synthetic dataset
+    synthetic_dataset = NewSyntheticBanditDataset(**obp_args)
 
-    if synthetic_config['extra_args']['reward_type'] == "continuos":
-        dataset.reward_min = synthetic_config['extra_args'].get('min_reward', dataset.reward_min)
-        dataset.reward_max = synthetic_config['extra_args'].get('max_reward', dataset.reward_max)
+    # Set reward range if reward type is continuous
+    if config['extra_args']['reward_type'] == "continuous":
+        synthetic_dataset.reward_min = config['extra_args'].get('min_reward', synthetic_dataset.reward_min)
+        synthetic_dataset.reward_max = config['extra_args'].get('max_reward', synthetic_dataset.reward_max)
 
-    bandit_data = dataset.obtain_batch_bandit_feedback(obp_args['n_rounds'])
+    # Obtain batch bandit feedback
+    bandit_data = synthetic_dataset.obtain_batch_bandit_feedback(obp_args['n_rounds'])
 
-#-----------------------------------------------------TO-CSV-------------------------------------------------------#
+    # Convert data to pandas dataframe and save to csv
     df = pd.DataFrame({
         'user_id': bandit_data['users'],
         'item_id': bandit_data['action'],
@@ -41,8 +40,7 @@ def create_synthetic_data(synthetic_config):
     })
     df.to_csv('temp/bandit_data.csv', index=False)
 
-
-#---------------------------------------------------SPLITTING------------------------------------------------------#
+    # Split the data into training and test sets
     dataset = {
         'path': "temp/bandit_data.csv",
         'random_seed': 0,
@@ -50,26 +48,29 @@ def create_synthetic_data(synthetic_config):
         'skip_head': True
     }
 
-    loader = FullData(dataset, synthetic_config['splitting'])
-    train_dataset, test_dataset, _, _, = loader.process()
-    test_uids = np.unique(test_dataset.data[:,0])
+    loader = FullData(dataset, config['splitting'])
+    train_dataset, test_dataset, _, _ = loader.process()
+    test_user_ids = np.unique(test_dataset.data[:, 0])
     threshold = test_dataset.data.min(axis=0)[3]
 
-    test_data = bandit_data[(bandit_data['user_id'].isin(test_uids))].groupby('user_id').head(100)
-    train_data = bandit_data[not (~bandit_data['user_id'].isin(test_uids)) & bandit_data['timestamp'] <= threshold]
-    train_idx = train_data.index.tolist()
-    test_idx = test_data.index.tolist()
+    # Get test data
+    test_data = bandit_data[(bandit_data['user_id'].isin(test_user_ids))].groupby('user_id').head(100)
 
-    train_dict = {k: bandit_data[k][train_idx] for k,v in bandit_data.items() if isinstance(v, np.array)}
-    test_dict = {k: bandit_data[k][test_idx] for k,v in bandit_data.items() if isinstance(v, np.array)}
+    # Get training data
+    train_data = bandit_data[~bandit_data['user_id'].isin(test_user_ids) & (bandit_data['timestamp'] <= threshold)]
+    train_indices = train_data.index.tolist()
+    test_indices = test_data.index.tolist()
 
-    train_dict.update({k: bandit_data[k] for k,v in bandit_data.items() if isinstance(v, int)})
-    test_dict.update({k: bandit_data[k] for k,v in bandit_data.items() if isinstance(v, int)})
+    train_dict = {k: bandit_data[k][train_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
+    test_dict = {k: bandit_data[k][test_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
 
-    train_dict['n_rounds'] = len(train_idx)
-    test_dict['n_rounds'] = len(test_idx)
+    train_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
+    test_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
 
-#----------------------------------------------------SAVE----------------------------------------------------------#
+    train_dict['n_rounds'] = len(train_indices)
+    test_dict['n_rounds'] = len(test_indices)
+
+    # Save data
     with open("train_data.obj", "wb") as f:
         pickle.dump(train_dict, f)
     with open("test_data.obj", "wb") as f:
