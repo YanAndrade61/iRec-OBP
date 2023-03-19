@@ -64,3 +64,30 @@ def sample_action_context(action_dist: np.ndarray, users: np.ndarray, random_sta
             cum_action_dist[i][action] = -1
 
     return chosen_actions
+
+def check_args(config: dict) -> None:
+    """
+    Check whether the arguments passed in the configuration dictionary are valid.
+
+    Args:
+        config (dict): A dictionary with configurations about OBP.
+
+    Raises:
+        ValueError: If n_rounds is not equal to the sum of frequency in user_context_file, 
+        or if any of the frequencies in user_context_file is greater than n_actions.
+    """
+    obp_args = config.get('obp_args', {})
+    n_rounds = obp_args.get('n_rounds')
+    n_actions = obp_args.get('n_actions')
+    context_file_path = config.get('extra_args', {}).get('context_file_path')
+    
+    if not all([n_rounds, n_actions, context_file_path]):
+        raise ValueError('Mandatory parameters were not specified: n_rounds, n_actions, context_file_path')
+    
+    df = pd.read_csv(context_file_path, delimiter='|', converters={'context': eval})
+    
+    if df['freq'].sum() != n_rounds:
+        raise ValueError("The value of n_rounds must be equal to the sum of frequency in user_context_file.")
+    
+    if (df['freq'] > n_actions).any():
+        raise ValueError("All frequency values in user_context_file must be smaller or equal to the value of n_actions.") 

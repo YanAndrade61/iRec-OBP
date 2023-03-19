@@ -2,8 +2,9 @@ import pandas as pd
 import numpy as np
 import pickle
 from irec.environment.loader.full_data import FullData
-from api.data.newSynthetic import NewSyntheticBanditDataset
+from .newSynthetic import NewSyntheticBanditDataset
 from obp.dataset.synthetic import * 
+from .utils import check_args
 
 def get_class(class_name: str):
     try:
@@ -12,8 +13,10 @@ def get_class(class_name: str):
         raise Exception(f"Class not found: {class_name}.")
 
 def create_synthetic_data(config):
+
     obp_args = config['obp_args']
     extra_args = config['extra_args']
+    check_args(config)
 
     if obp_args.get('reward_function', None) is not None:
         obp_args['reward_function'] = get_class(obp_args['reward_function'])
