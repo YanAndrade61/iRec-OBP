@@ -13,6 +13,7 @@ def get_class(class_name: str):
 
 def create_synthetic_data(config):
     obp_args = config['obp_args']
+    extra_args = config['extra_args']
 
     if obp_args.get('reward_function', None) is not None:
         obp_args['reward_function'] = get_class(obp_args['reward_function'])
@@ -22,11 +23,12 @@ def create_synthetic_data(config):
 
     # Create synthetic dataset
     synthetic_dataset = NewSyntheticBanditDataset(**obp_args)
-
+    synthetic_dataset.user_context_file = extra_args['user_context_file']
+    
     # Set reward range if reward type is continuous
-    if config['extra_args']['reward_type'] == "continuous":
-        synthetic_dataset.reward_min = config['extra_args'].get('min_reward', synthetic_dataset.reward_min)
-        synthetic_dataset.reward_max = config['extra_args'].get('max_reward', synthetic_dataset.reward_max)
+    if extra_args['reward_type'] == "continuous":
+        synthetic_dataset.reward_min = extra_args.get('min_reward', synthetic_dataset.reward_min)
+        synthetic_dataset.reward_max = extra_args.get('max_reward', synthetic_dataset.reward_max)
 
     # Obtain batch bandit feedback
     bandit_data = synthetic_dataset.obtain_batch_bandit_feedback(obp_args['n_rounds'])
