@@ -71,12 +71,9 @@ def create_synthetic_data(config):
 
     train_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
     test_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
+    test_dict['position'] = None
 
     train_dict['n_rounds'] = len(train_indices)
     test_dict['n_rounds'] = len(test_indices)
 
-    # Save data
-    with open("train_data.obj", "wb") as f:
-        pickle.dump(train_dict, f)
-    with open("test_data.obj", "wb") as f:
-        pickle.dump(test_dict, f)
+    return dataset, train_dict, test_dict

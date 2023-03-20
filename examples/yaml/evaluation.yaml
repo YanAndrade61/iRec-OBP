@@ -1,5 +1,3 @@
 EvaluationSetup:
-    irec_parameters_file: "path"
-    ope_estimators: 
-    [IPW,DM,DR]
-    regression_model: linear
+    irec_args: "path"
+    regression_model: linear_regression
