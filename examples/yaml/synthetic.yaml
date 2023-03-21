@@ -5,8 +5,13 @@
         dim_context:  4
         reward_type: 'continuous'
         reward_function: 'linear_reward_function'
+        reward_std: 1.0
+        action_context: Null
         behavior_policy_function: Null
+        action_context: Null
+        n_deficient_actions: 0
         random_state:  12345
+        beta: 1.0
         dataset_name: Null
 
     splitting:

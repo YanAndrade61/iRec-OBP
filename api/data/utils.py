@@ -25,13 +25,12 @@ def select_context(n_rounds: int, n_actions: int, context_file_path: str):
     df = pd.read_csv(context_file_path, delimiter='|', converters={'context': eval})
     
     # Cria uma lista de contexto para cada usuário com base na frequência de ocorrência
-    u_contexts = [list(context) for context, freq in zip(df['context'], df['freq']) for i in range(freq)]
+    u_ids = [u for u, freq in zip(df['user_id'], df['freq']) for i in range(freq)]
     
-    # Embaralha as listas de contexto e IDs
-    u_zipped = list(zip(df['user_id'], u_contexts))
-    random.shuffle(u_zipped)
-    u_ids, u_contexts = zip(*u_zipped)
-
+    # Embaralha as listas de IDs
+    random.shuffle(u_ids)
+    u_contexts = [ df[df['user_id'] == u]['context'].values[0] for u in u_ids]
+    
     print("Seleção de contexto concluída.")
 
     return np.array(u_ids), np.array(u_contexts)

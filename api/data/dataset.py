@@ -46,7 +46,7 @@ def create_synthetic_data(config):
         'rating': bandit_data['reward'],
         'timestamp': range(len(bandit_data['action']))
     })
-    df.to_csv('temp/bandit_data.csv', index=False)
+    df.to_csv('.local/obp_cache/bandit_data.csv', index=False)
 
     loader = FullData(config['dataset'], config['splitting'])
     train_dataset, test_dataset, _, _ = loader.process()
@@ -72,4 +72,4 @@ def create_synthetic_data(config):
     train_dict['n_rounds'] = len(train_indices)
     test_dict['n_rounds'] = len(test_indices)
 
-    return dataset, train_dict, test_dict
+    return train_dict, test_dict
