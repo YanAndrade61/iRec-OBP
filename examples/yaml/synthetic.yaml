@@ -1,7 +1,7 @@
 'Synthetic':
     obp_args:
         n_rounds: 100
-        n_actions:  100
+        n_actions: 100
         dim_context:  4
         reward_type: 'continuous'
         reward_function: 'linear_reward_function'
