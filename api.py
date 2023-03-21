@@ -23,8 +23,9 @@ def argument(*name_or_flags, **kwargs):
 @subcommand(
     args=[
         argument("--synthetic-config", type=str, help="Path to config file to read parameters from.", required=True),
-        argument("--experimental-config", type=str, help="Path to config file to read parameters from.", required=True),
         argument("--evaluation-config", type=str, help="Path to config file to read parameters from.", required=True),
+        argument("--experimental-config", type=str, help="Path to config file to read parameters from.", required=True),
+        argument("--irec-config", type=str, help="Path of yamls to config irec experimental.", required=True),
     ],
     command_name="execute-experiment"
 )

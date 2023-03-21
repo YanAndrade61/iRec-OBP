@@ -1,0 +1,23 @@
+'MovieLens 100k':
+  LinUCB:
+    SimpleAgent:
+      action_selection_policy:
+        ASPGreedy: {}
+      value_function:
+        LinUCB:
+          alpha: 1.0
+          num_lat: 10
+
+  LinearEGreedy:
+    SimpleAgent:
+      action_selection_policy:
+        ASPEGreedy:
+          epsilon: 0.1
+      value_function:
+        LinearEGreedy:
+          item_var: 0.01
+          iterations: 20
+          num_lat: 10
+          stop_criteria: 0.0009
+          user_var: 0.01
+          var: 0.05

@@ -1,4 +1,12 @@
-ExperimentalSetup:
-    irec_parameters_file: path
-    input_file: path
-    output_file: path
+agents:
+  - LinearEGreedy
+datasets:
+  - Synthetic
+evaluation_policy:
+  - FixedInteraction
+metrics:
+  - Hits
+metric_evaluator:
+  - UserCumulativeInteraction
+tasks: 8
+forced_run: False

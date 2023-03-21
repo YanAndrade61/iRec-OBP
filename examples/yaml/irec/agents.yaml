@@ -1,0 +1,15 @@
+LinearEGreedy: # Recommender agent name
+  SimpleAgent: # Agent type
+    action_selection_policy: 
+      ASPEGreedy: # Action selection policy
+        # variables
+        epsilon: 0.1 
+    value_function:
+      LinearEGreedy: # Agent's value function
+        # variables
+        item_var: 0.01
+        iterations: 20
+        num_lat: 10
+        stop_criteria: 0.0009
+        user_var: 0.01
+        var: 0.05

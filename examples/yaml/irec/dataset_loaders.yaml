@@ -1,0 +1,7 @@
+'Synthetic': # Dataset name
+    FullData: # Loader method
+        dataset: # Info dataset
+          path: 
+          random_seed: 0
+          file_delimiter: ","
+          skip_head: true

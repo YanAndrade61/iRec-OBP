@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import random
+import yaml
+import os
+import json
 from sklearn.utils import check_random_state
 from tqdm import tqdm
 
@@ -47,12 +50,13 @@ def sample_action_context(action_dist: np.ndarray, users: np.ndarray, random_sta
 
     """
     random_ = check_random_state(random_state)
-    n_users, n_actions = action_dist.shape
+    n_actions, n_users = action_dist.shape
+    print('select action ', action_dist.shape)
     chosen_actions = np.zeros(n_users, dtype=np.int)
 
     cum_action_dist = np.cumsum(action_dist, axis=1)
     uniform_rvs = random_.uniform(size=n_users)
-
+    print(cum_action_dist.shape)
     for i in tqdm(range(n_users), desc="Selecting actions"):
         hist = set()
         for _ in range(n_actions):
@@ -76,18 +80,51 @@ def check_args(config: dict) -> None:
         ValueError: If n_rounds is not equal to the sum of frequency in user_context_file, 
         or if any of the frequencies in user_context_file is greater than n_actions.
     """
+    print(json.dumps(config,indent=4))
+
     obp_args = config.get('obp_args', {})
     n_rounds = obp_args.get('n_rounds')
     n_actions = obp_args.get('n_actions')
-    context_file_path = config.get('extra_args', {}).get('context_file_path')
+    context_file_path = config.get('extra_args', {}).get('user_context_file')
     
     if not all([n_rounds, n_actions, context_file_path]):
-        raise ValueError('Mandatory parameters were not specified: n_rounds, n_actions, context_file_path')
+        raise ValueError('Mandatory parameters were not specified: n_rounds, n_actions, user_context_file')
     
     df = pd.read_csv(context_file_path, delimiter='|', converters={'context': eval})
-    
+
     if df['freq'].sum() != n_rounds:
         raise ValueError("The value of n_rounds must be equal to the sum of frequency in user_context_file.")
     
     if (df['freq'] > n_actions).any():
         raise ValueError("All frequency values in user_context_file must be smaller or equal to the value of n_actions.") 
+
+def load_settings(workdir):
+    d = dict()
+    loader = yaml.SafeLoader
+    
+    d["agents_general_settings"] = yaml.load(
+        open(os.path.join(workdir, "agents_general_settings.yaml")),
+        Loader=loader,
+    )
+    d["evaluation_policies"] = yaml.load(
+        open(os.path.join(workdir, "evaluation_policies.yaml")),
+        Loader=loader,
+    )
+    d["dataset_loaders"] = yaml.load(
+        open(os.path.join(workdir, "dataset_loaders.yaml")),
+        Loader=loader,
+    )
+    d["agents"] = yaml.load(
+        open(os.path.join(workdir, "agents.yaml")),
+        Loader=loader,
+    )
+    d["defaults"] = yaml.load(
+        open(os.path.join(workdir, "defaults.yaml")),
+        Loader=loader,
+    )
+    d["metric_evaluators"] = yaml.load(
+        open(os.path.join(workdir, "metric_evaluators.yaml")),
+        Loader=loader,
+    )
+
+    return d

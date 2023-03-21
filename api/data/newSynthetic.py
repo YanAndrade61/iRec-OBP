@@ -2,10 +2,11 @@ import numpy as np
 from scipy.stats import truncnorm
 from sklearn.utils import check_scalar
 
-from utils import select_context
+from api.data.utils import select_context
+from api.data.utils import sample_action_context
 from obp.dataset import SyntheticBanditDataset
 from obp.types import BanditFeedback
-from obp.utils import sample_action_fast
+# from obp.utils import sample_action_fast
 from obp.utils import softmax
 from obp.dataset.reward_type import RewardType
 
@@ -30,7 +31,7 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
         check_scalar(n_rounds, "n_rounds", int, min_val=1)
         users = None
         if self.user_context_file:
-            users,contexts = select_context(n_rounds,self.n_actions)
+            users,contexts = select_context(n_rounds,self.n_actions,self.user_context_file)
         else:
             contexts = self.random_.normal(size=(n_rounds, self.dim_context))
 
@@ -55,30 +56,31 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
                 random_state=self.random_state,
             )
         # create some deficient actions based on the value of `n_deficient_actions`
-        if self.n_deficient_actions > 0:
-            pi_b = np.zeros_like(pi_b_logits)
-            n_supported_actions = self.n_actions - self.n_deficient_actions
-            supported_actions = np.argsort(
-                self.random_.gumbel(size=(n_rounds, self.n_actions)), axis=1
-            )[:, ::-1][:, :n_supported_actions]
-            supported_actions_idx = (
-                np.tile(np.arange(n_rounds), (n_supported_actions, 1)).T,
-                supported_actions,
-            )
-            pi_b[supported_actions_idx] = softmax(
-                self.beta * pi_b_logits[supported_actions_idx]
-            )
-        else:
-            pi_b = softmax(self.beta * pi_b_logits)
+        # if self.n_deficient_actions > 0:
+        #     pi_b = np.zeros_like(pi_b_logits)
+        #     n_supported_actions = self.n_actions - self.n_deficient_actions
+        #     supported_actions = np.argsort(
+        #         self.random_.gumbel(size=(n_rounds, self.n_actions)), axis=1
+        #     )[:, ::-1][:, :n_supported_actions]
+        #     supported_actions_idx = (
+        #         np.tile(np.arange(n_rounds), (n_supported_actions, 1)).T,
+        #         supported_actions,
+        #     )
+        #     pi_b[supported_actions_idx] = softmax(
+        #         self.beta * pi_b_logits[supported_actions_idx]
+        #     )
+        # else:
+        self.beta = 0.1
+        pi_b = softmax(self.beta * pi_b_logits)
         # sample actions for each round based on the behavior policy
         if self.user_context_file:
-            actions = sample_action_fast_ml(pi_b,users, random_state=self.random_state)
+            actions = sample_action_context(pi_b,users, random_state=self.random_state)
         else:
             actions = sample_action_fast(pi_b, random_state=self.random_state)
 
         # sample rewards based on the context and action
         rewards = self.sample_reward_given_expected_reward(expected_reward_, actions)
-
+        print(pi_bactions,n_rounds)
         return dict(
             n_rounds=n_rounds,
             n_actions=self.n_actions,

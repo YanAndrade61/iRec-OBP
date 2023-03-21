@@ -5,6 +5,7 @@ from irec.environment.loader.full_data import FullData
 from .newSynthetic import NewSyntheticBanditDataset
 from obp.dataset.synthetic import * 
 from .utils import check_args
+import json
 
 def get_class(class_name: str):
     try:
@@ -14,8 +15,9 @@ def get_class(class_name: str):
 
 def create_synthetic_data(config):
 
-    obp_args = config['obp_args']
+    obp_args: dict = config['obp_args']
     extra_args = config['extra_args']
+    # print(json.dumps(config,indent=4))
     check_args(config)
 
     if obp_args.get('reward_function', None) is not None:
@@ -25,16 +27,17 @@ def create_synthetic_data(config):
         obp_args['behavior_function'] = get_class(obp_args['behavior_function'])
 
     # Create synthetic dataset
+    n_rounds = obp_args.pop('n_rounds')
     synthetic_dataset = NewSyntheticBanditDataset(**obp_args)
     synthetic_dataset.user_context_file = extra_args['user_context_file']
     
     # Set reward range if reward type is continuous
-    if extra_args['reward_type'] == "continuous":
-        synthetic_dataset.reward_min = extra_args.get('min_reward', synthetic_dataset.reward_min)
-        synthetic_dataset.reward_max = extra_args.get('max_reward', synthetic_dataset.reward_max)
+    if obp_args['reward_type'] == "continuous":
+        synthetic_dataset.reward_min = extra_args['min_reward'] or synthetic_dataset.reward_min
+        synthetic_dataset.reward_max = extra_args['max_reward'] or synthetic_dataset.reward_max
 
     # Obtain batch bandit feedback
-    bandit_data = synthetic_dataset.obtain_batch_bandit_feedback(obp_args['n_rounds'])
+    bandit_data = synthetic_dataset.obtain_batch_bandit_feedback(n_rounds)
 
     # Convert data to pandas dataframe and save to csv
     df = pd.DataFrame({
@@ -45,15 +48,7 @@ def create_synthetic_data(config):
     })
     df.to_csv('temp/bandit_data.csv', index=False)
 
-    # Split the data into training and test sets
-    dataset = {
-        'path': "temp/bandit_data.csv",
-        'random_seed': 0,
-        'file_delimiter': ",",
-        'skip_head': True
-    }
-
-    loader = FullData(dataset, config['splitting'])
+    loader = FullData(config['dataset'], config['splitting'])
     train_dataset, test_dataset, _, _ = loader.process()
     test_user_ids = np.unique(test_dataset.data[:, 0])
     threshold = test_dataset.data.min(axis=0)[3]
@@ -66,6 +61,7 @@ def create_synthetic_data(config):
     train_indices = train_data.index.tolist()
     test_indices = test_data.index.tolist()
 
+    #Splitting BanditFeedback
     train_dict = {k: bandit_data[k][train_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
     test_dict = {k: bandit_data[k][test_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
 

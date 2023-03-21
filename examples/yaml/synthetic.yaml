@@ -1,15 +1,11 @@
-SyntheticData:
+'Synthetic':
     obp_args:
-        n_rounds: 1000
-        n_actions:  1000
-        dim_context:  23
-        reward_type: 'binary'
+        n_rounds: 100
+        n_actions:  100
+        dim_context:  4
+        reward_type: 'continuous'
         reward_function: 'linear_reward_function'
-        reward_std: Null
-        action_context: Null
         behavior_policy_function: Null
-        beta: Null
-        n_deficient_actions:  Null
         random_state:  12345
         dataset_name: Null
 
@@ -19,6 +15,6 @@ SyntheticData:
           test_consumes:  5
     
     extra_args:
-        user_context_file: '../examples/context/user.csv'
-        min_reward: Null
-        max_reward: Null
+        user_context_file: 'examples/context/user.csv'
+        min_reward: 1
+        max_reward: 5
