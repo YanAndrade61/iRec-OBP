@@ -54,16 +54,16 @@ def create_synthetic_data(config):
     threshold = test_dataset.data.min(axis=0)[3]
 
     # Get test data
-    test_data = bandit_data[(bandit_data['user_id'].isin(test_user_ids))].groupby('user_id').head(100)
+    test_data =df[df['user_id'].isin(test_user_ids)].groupby('user_id').head(100)
 
     # Get training data
-    train_data = bandit_data[~bandit_data['user_id'].isin(test_user_ids) & (bandit_data['timestamp'] <= threshold)]
+    train_data =df[df['user_id'].isin(test_user_ids) & df['timestamp'] <= threshold]
     train_indices = train_data.index.tolist()
     test_indices = test_data.index.tolist()
 
     #Splitting BanditFeedback
-    train_dict = {k: bandit_data[k][train_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
-    test_dict = {k: bandit_data[k][test_indices] for k, v in bandit_data.items() if isinstance(v, np.array)}
+    train_dict = {k: bandit_data[k][train_indices] for k, v in bandit_data.items() if isinstance(v, list)}
+    test_dict = {k: bandit_data[k][test_indices] for k, v in bandit_data.items() if isinstance(v, list)}
 
     train_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
     test_dict.update({k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)})
