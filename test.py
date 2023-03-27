@@ -1,15 +1,28 @@
-import yaml
-from obp.dataset import *
+import os
 
-def get_class(class_name: str):
-    try:
-        return globals()[class_name]
-    except KeyError:
-        raise Exception(f"Class not found: {class_name}.")
+lst = [1,2,3]
+os.system("models=1;")
+os.system('echo $models')
 
-if __name__ == '__main__':
-    with open('examples/yaml/synthetic.yaml', 'r') as f:
-        synthetic_config = yaml.load(f, Loader=yaml.BaseLoader)
-    print(synthetic_config)
-    print(get_class(synthetic_config['reward_function']))
-    print(get_class(synthetic_config['behavior_function']))
+"""
+1. Dataset
+- Criar dataset
+- Mover dataset pra irec-cmdline/data/dataset/
+- Atualizar o yaml dataset_loaders.yaml
+- Gerar dataset pelo irec generate_dataset.py
+
+2. Experimental
+- Pegar diretorio de trabalho atual
+
+cd $app_path/scripts/agents
+
+python3 run_agent_best.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}"
+
+cd $app_path/scripts/evaluation
+
+python3 eval_agent_best.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}" --metrics "${metrics[@]}" --metric_evaluator "${metric_eval[@]}"
+python3 print_latex_table_results.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}" --metrics "${metrics[@]}" --metric_evaluator "${metric_eval[@]}"
+
+
+"""
+

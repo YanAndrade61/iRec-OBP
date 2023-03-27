@@ -1,7 +1,0 @@
-'Synthetic': # Dataset name
-    FullData: # Loader method
-        dataset: # Info dataset
-          path: /home/labpi/yan/iRec-OBP/.local/obp_cache/bandit_data.csv
-          random_seed: 0
-          file_delimiter: ","
-          skip_head: true

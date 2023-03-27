@@ -15,7 +15,7 @@ def get_class(class_name: str):
 
 def create_synthetic_data(config):
 
-    obp_args: dict = config['obp_args']
+    obp_args = config['obp_args']
     extra_args = config['extra_args']
     # print(json.dumps(config,indent=4))
     check_args(config)

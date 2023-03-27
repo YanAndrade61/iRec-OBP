@@ -1,4 +1,0 @@
-FixedInteraction: # Evaluation Policy
-  num_interactions: 100 # Num of interactions for each user
-  interaction_size: 1 # Num of itens that will be recommended for each interaction
-  save_info: False # Wheter or not to save the information obtained during the evaluation.
