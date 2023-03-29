@@ -164,6 +164,5 @@ def create_synthetic_data(config: dict, dataset_name: str):
 
     train_dict, test_dict = split_synthetic_data(bandit_data, train_idx, test_idx)
 
-    save_data_pi
 
     return train_dict, test_dict
