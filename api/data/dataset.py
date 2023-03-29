@@ -92,6 +92,41 @@ def get_train_test_idx(config: dict, df: pd.DataFrame):
     test_idx = test_df.index.tolist()
     return train_idx, test_idx
 
+def split_synthetic_data(bandit_data: dict, train_idx: list, test_idx: list):
+    """Split bandit data based on indexes of the iRec splitting.
+
+    Args:
+        bandit_data (dict): Contain the synthetic data with all parameters.
+        train_idx (list): Contain the indexes of rows in train.
+        train_idx (list): Contain the indexes of rows in test.
+    Returns:
+        dict: Returns the train dict.
+        dict: Returns the test dict.
+    """
+
+    train_dict = {
+        k: bandit_data[k][train_idx]
+        for k, v in bandit_data.items()
+        if isinstance(v, list)
+    }
+    test_dict = {
+        k: bandit_data[k][test_idx]
+        for k, v in bandit_data.items()
+        if isinstance(v, list)
+    }
+
+    train_dict.update(
+        {k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)}
+    )
+    test_dict.update(
+        {k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)}
+    )
+    test_dict.position = None
+
+    train_dict.n_rounds = len(train_idx)
+    test_dict.n_rounds = len(test_idx)
+
+    return train_dict, test_dict
 
 def create_synthetic_data(config: dict, dataset_name: str):
     """Generate a synthetic dataset based on synthetic.yaml parameters
@@ -113,40 +148,18 @@ def create_synthetic_data(config: dict, dataset_name: str):
 
     bandit_data = synthetic_dataset.obtain_batch_bandit_feedback(n_rounds)
 
-    # Convert data to pandas dataframe and save to csv
     df = pd.DataFrame(
         {
-            "user_id": bandit_data["users"],
-            "item_id": bandit_data["action"],
-            "rating": bandit_data["reward"],
-            "timestamp": range(len(bandit_data["action"])),
+            "user_id": bandit_data.users,
+            "item_id": bandit_data.action,
+            "rating": bandit_data.reward,
+            "timestamp": range(len(bandit_data.action)),
         }
     )
     save_data(df, dataset_name)
 
     train_idx, test_idx = get_train_test_idx(config, df)
 
-    split_bandit_data(bandit_data, train_idx, test_idx)
-    train_dict = {
-        k: bandit_data[k][train_idx]
-        for k, v in bandit_data.items()
-        if isinstance(v, list)
-    }
-    test_dict = {
-        k: bandit_data[k][test_idx]
-        for k, v in bandit_data.items()
-        if isinstance(v, list)
-    }
-
-    train_dict.update(
-        {k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)}
-    )
-    test_dict.update(
-        {k: bandit_data[k] for k, v in bandit_data.items() if isinstance(v, int)}
-    )
-    test_dict["position"] = None
-
-    train_dict["n_rounds"] = len(train_indices)
-    test_dict["n_rounds"] = len(test_indices)
+    train_dict, test_dict = split_synthetic_data(bandit_data, train_idx, test_idx)
 
     return train_dict, test_dict
