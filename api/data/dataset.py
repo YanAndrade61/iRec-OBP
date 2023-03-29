@@ -53,7 +53,7 @@ def load_synthetic(obp_args: dict, extra_args: dict):
     return synthetic_dataset
 
 
-def save_data(df: pd.DataFrame, name: str):
+def save_data_csv(df: pd.DataFrame, name: str):
     """Save dataset in the path that iRec requires.
 
     Args:
@@ -128,6 +128,8 @@ def split_synthetic_data(bandit_data: dict, train_idx: list, test_idx: list):
 
     return train_dict, test_dict
 
+
+
 def create_synthetic_data(config: dict, dataset_name: str):
     """Generate a synthetic dataset based on synthetic.yaml parameters
 
@@ -156,10 +158,12 @@ def create_synthetic_data(config: dict, dataset_name: str):
             "timestamp": range(len(bandit_data.action)),
         }
     )
-    save_data(df, dataset_name)
+    save_data_csv(df, dataset_name)
 
     train_idx, test_idx = get_train_test_idx(config, df)
 
     train_dict, test_dict = split_synthetic_data(bandit_data, train_idx, test_idx)
+
+    save_data_pi
 
     return train_dict, test_dict

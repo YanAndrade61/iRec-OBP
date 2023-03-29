@@ -15,9 +15,9 @@ import os
 
 def run_experimental(args):
     cwd = os.popen('pwd').read().rstrip()
-    path_script = ['irec','irec-cmdline','app','scripts']
-    path_script = os.path.join(cwd,*path_script)
+    script_path = os.path.join(cwd,'irec','irec-cmdline','app','scripts')
 
+    print(script_path)
     os.system(f"models={args.agents};echo $models")
     print(cwd)     
     print(args)
