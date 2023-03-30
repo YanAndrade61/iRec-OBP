@@ -2,8 +2,8 @@ import numpy as np
 from scipy.stats import truncnorm
 from sklearn.utils import check_scalar
 
-from api.data.utils import select_context
-from api.data.utils import sample_action_context
+from api.dataset.utils import select_context
+from api.dataset.utils import sample_action_context
 from obp.dataset import SyntheticBanditDataset
 from obp.types import BanditFeedback
 from obp.utils import sample_action_fast
@@ -29,13 +29,13 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
 
         """
         check_scalar(n_rounds, "n_rounds", int, min_val=1)
+        users = None
 
         if self.user_context_file:
             users, contexts = select_context(n_rounds,self.n_actions,self.user_context_file)
         else:
             contexts = self.random_.normal(size=(n_rounds, self.dim_context))
 
-        print("context",contexts.shape)
 
         # calc expected reward given context and action
         expected_reward_ = self.calc_expected_reward(contexts)
@@ -47,7 +47,6 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
             expected_reward_ = truncnorm.stats(
                 a=a, b=b, loc=mean, scale=self.reward_std, moments="m"
             )
-        print("expected",expected_reward_.shape)
         # calculate the action choice probabilities of the behavior policy
         if self.behavior_policy_function is None:
             pi_b_logits = expected_reward_
@@ -74,7 +73,6 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
         else:
             pi_b = softmax(self.beta * pi_b_logits)
 
-        print('shape',pi_b.shape)
         # sample actions for each round based on the behavior policy
         if self.user_context_file:
             actions = sample_action_context(pi_b,users, random_state=self.random_state)

@@ -50,12 +50,10 @@ def sample_action_context(action_dist: np.ndarray, users: np.ndarray, random_sta
     """
     random_ = check_random_state(random_state)
     n_actions, n_users = action_dist.shape
-    print('select action ', action_dist.shape)
     chosen_actions = np.zeros(n_users, dtype=np.int)
 
     cum_action_dist = np.cumsum(action_dist, axis=1)
     uniform_rvs = random_.uniform(size=n_users)
-    print(cum_action_dist.shape)
     for i in tqdm(range(n_users), desc="Selecting actions"):
         hist = set()
         for _ in range(n_actions):
@@ -79,7 +77,6 @@ def check_args(config: dict) -> None:
         ValueError: If n_rounds is not equal to the sum of frequency in user_context_file, 
         or if any of the frequencies in user_context_file is greater than n_actions.
     """
-    print(json.dumps(config,indent=4))
 
     obp_args = config.get('obp_args', {})
     n_rounds = obp_args.get('n_rounds')

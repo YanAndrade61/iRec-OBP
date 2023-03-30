@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
-from api.commands.run_experiment import run_experiment
-from api.experimental.experimental import run_experimental
+from api.commands.commands import run_dataset, run_experimental
 
 CLI = ArgumentParser()
 
@@ -22,20 +21,11 @@ def argument(*name_or_flags, **kwargs):
     return ([ *name_or_flags ], kwargs)
 
 @subcommand(
-    args=[
-        argument("--synthetic-config", type=str, help="Path to config file to read parameters from.", required=True),
-        argument("--evaluation-config", type=str, help="Path to config file to read parameters from.", required=True),
-        argument("--experimental-config", type=str, help="Path to config file to read parameters from.", required=True),
-        argument("--irec-config", type=str, help="Path of yamls to config irec experimental.", required=True),
-    ],
-    command_name="execute-experiment"
+    command_name="execute-dataset"
 )
 
-
-#Criar subcomandos para cada comando
-
-def execute_experiment(args):
-    run_experiment(args)
+def execute_dataset(args):
+    run_dataset()
 
 @subcommand(
     args=[

@@ -1,18 +1,24 @@
-'Synthetic':
+'synthetic':
     obp_args:
         n_rounds: 100
         n_actions: 100
-        dim_context:  4
+        dim_context: 4
         reward_type: 'continuous'
         reward_function: 'linear_reward_function'
         reward_std: 1.0
         action_context: Null
-        behavior_policy_function: Null
+        behavior_policy_function: 'linear_behavior_policy'
         action_context: Null
         n_deficient_actions: 0
         random_state:  12345
         beta: 1.0
         dataset_name: Null
+
+    dataset:
+      path: /home/yan/repos/iRec-OBP/irec/irec-cmdline/app/data/datasets/synthetic.csv
+      random_seed: 0
+      file_delimiter: ","
+      skip_head: true
 
     splitting:
           strategy: 'temporal'

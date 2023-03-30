@@ -1,5 +1,5 @@
 import numpy as np
-from data.newSynthetic import NewSyntheticBanditDataset
+from dataset.newSynthetic import NewSyntheticBanditDataset
 
 from obp.ope import RegressionModel
 from sklearn.ensemble import GradientBoostingClassifier
