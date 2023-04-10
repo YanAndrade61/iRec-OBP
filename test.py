@@ -1,27 +1,14 @@
-import os
+import pandas as pd
+from collections import Counter
+import json
+import numpy as np
 
-lst = [1,2,3]
-os.system("models=1;")
-os.system('echo $models')
+ll = np.array([np.arange(20) for i in 20])
 
-"""
-1. Dataset
-- Criar dataset
-- Mover dataset pra irec-cmdline/data/dataset/
-- Atualizar o yaml dataset_loaders.yaml
-- Gerar dataset pelo irec generate_dataset.py
 
-2. Experimental
-- Pegar diretorio de trabalho atual
+x = pd.read_csv("ml.csv", sep="|").head(50)
 
-cd $app_path/scripts/agents
+x["freq"] = [v if v <= 50 else 50 for v in x["freq"]]
+print(f"sum = {x['freq'].sum()}, max={x['freq'].max()}")
 
-python3 run_agent_best.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}"
-
-cd $app_path/scripts/evaluation
-
-python3 eval_agent_best.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}" --metrics "${metrics[@]}" --metric_evaluator "${metric_eval[@]}"
-python3 print_latex_table_results.py --agents ${models[@]} --dataset_loaders "${bases[@]}" --evaluation_policy "${eval_pol[@]}" --metrics "${metrics[@]}" --metric_evaluator "${metric_eval[@]}"
-
-"""
-
+x.to_csv("test.csv", sep="|", index=False)

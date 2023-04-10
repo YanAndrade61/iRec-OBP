@@ -1,8 +1,8 @@
 'synthetic':
     obp_args:
-        n_rounds: 100
-        n_actions: 100
-        dim_context: 4
+        n_rounds: 2091
+        n_actions: 50
+        dim_context: 23
         reward_type: 'continuous'
         reward_function: 'linear_reward_function'
         reward_std: 1.0
@@ -21,11 +21,11 @@
       skip_head: true
 
     splitting:
-          strategy: 'temporal'
+          strategy: 'global'
           train_size: 0.8
           test_consumes:  5
     
     extra_args:
-        user_context_file: 'examples/context/user.csv'
+        user_context_file: 'examples/context/test.csv'
         min_reward: 1
         max_reward: 5

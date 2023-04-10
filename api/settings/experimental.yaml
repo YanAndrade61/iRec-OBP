@@ -1,12 +1,11 @@
 agents:
-  - LinearEGreedy
-datasets:
-  - Synthetic
+  - Random
+  - MostPopular
+dataset_loaders:
+  - synthetic
 evaluation_policy:
   - FixedInteraction
 metrics:
   - Hits
 metric_evaluator:
   - UserCumulativeInteraction
-tasks: 8
-forced_run: False

@@ -1,0 +1,21 @@
+"synthetic":
+  irec:
+    agents:
+      - Random
+      - MostPopular
+    dataset_loaders:
+      - synthetic
+    evaluation_policy:
+      - FixedInteraction
+    metrics:
+      - Hits
+    metric_evaluator:
+      - UserCumulativeInteraction
+  obp:
+    regression_model: LinearRegression
+    estimators:
+      - IPW
+      - DR
+      - DM
+
+    

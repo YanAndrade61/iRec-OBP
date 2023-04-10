@@ -1,14 +1,16 @@
 from argparse import ArgumentParser
-from api.commands.commands import run_dataset, run_experimental
+from api.commands.commands import run_dataset, run_experimental, run_evaluate
 
 CLI = ArgumentParser()
 
 SUBPARSERS = CLI.add_subparsers(dest="subcommand")
 
-def subcommand(args=[], parent=SUBPARSERS, **kwargs):
 
+def subcommand(args=[], parent=SUBPARSERS, **kwargs):
     def decorator(func):
-        parser = parent.add_parser(kwargs.get("command_name", func.__name__), description=func.__doc__)
+        parser = parent.add_parser(
+            kwargs.get("command_name", func.__name__), description=func.__doc__
+        )
 
         for arg in args:
             parser.add_argument(*arg[0], **arg[1])
@@ -17,30 +19,24 @@ def subcommand(args=[], parent=SUBPARSERS, **kwargs):
 
     return decorator
 
+
 def argument(*name_or_flags, **kwargs):
-    return ([ *name_or_flags ], kwargs)
+    return ([*name_or_flags], kwargs)
 
-@subcommand(
-    command_name="execute-dataset"
-)
 
+@subcommand(command_name="execute-dataset")
 def execute_dataset(args):
     run_dataset()
 
-@subcommand(
-    args=[
-        argument("--agents", type=str, nargs='*', help="Path to config file to read parameters from.", required=True),
-        argument("--dataset-loaders", type=str, nargs='*', help="Path to config file to read parameters from.", required=True),
-        argument("--evaluation-policy", type=str, nargs='*', help="Path to config file to read parameters from.", required=True),
-        argument("--metrics", type=str, nargs='*', help="Path to config file to read parameters from.", required=True),
-        argument("--metric-evaluator", type=str, nargs='*', help="Path to config file to read parameters from.", required=True),
 
-    ],
-    command_name="execute-experimental"
-)
-
+@subcommand(command_name="execute-experimental")
 def execute_experimental(args):
-    run_experimental(args)
+    run_experimental()
+
+
+@subcommand(command_name="execute-evaluate")
+def execute_evaluate(args):
+    run_evaluate()
 
 
 if __name__ == "__main__":

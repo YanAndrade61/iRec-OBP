@@ -10,8 +10,8 @@ from obp.utils import sample_action_fast
 from obp.utils import softmax
 from obp.dataset.reward_type import RewardType
 
+
 class NewSyntheticBanditDataset(SyntheticBanditDataset):
-  
     user_context_file: str
 
     def obtain_batch_bandit_feedback(self, n_rounds: int) -> BanditFeedback:
@@ -32,10 +32,11 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
         users = None
 
         if self.user_context_file:
-            users, contexts = select_context(n_rounds,self.n_actions,self.user_context_file)
+            users, contexts = select_context(
+                n_rounds, self.n_actions, self.user_context_file
+            )
         else:
             contexts = self.random_.normal(size=(n_rounds, self.dim_context))
-
 
         # calc expected reward given context and action
         expected_reward_ = self.calc_expected_reward(contexts)
@@ -75,13 +76,14 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
 
         # sample actions for each round based on the behavior policy
         if self.user_context_file:
-            actions = sample_action_context(pi_b,users, random_state=self.random_state)
+            actions = sample_action_context(pi_b, users, random_state=self.random_state)
         else:
             actions = sample_action_fast(pi_b, random_state=self.random_state)
 
         # sample rewards based on the context and action
         rewards = self.sample_reward_given_expected_reward(expected_reward_, actions)
 
+        print(pi_b.shape)
         return dict(
             n_rounds=n_rounds,
             n_actions=self.n_actions,
@@ -93,5 +95,5 @@ class NewSyntheticBanditDataset(SyntheticBanditDataset):
             expected_reward=expected_reward_,
             pi_b=pi_b[:, :, np.newaxis],
             pscore=pi_b[np.arange(n_rounds), actions],
-            users = users,
+            users=users,
         )

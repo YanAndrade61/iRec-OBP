@@ -49,7 +49,8 @@ def sample_action_context(action_dist: np.ndarray, users: np.ndarray, random_sta
 
     """
     random_ = check_random_state(random_state)
-    n_actions, n_users = action_dist.shape
+    n_users, n_actions = action_dist.shape
+    print('action_dist shape:0',action_dist.shape)
     chosen_actions = np.zeros(n_users, dtype=np.int)
 
     cum_action_dist = np.cumsum(action_dist, axis=1)
